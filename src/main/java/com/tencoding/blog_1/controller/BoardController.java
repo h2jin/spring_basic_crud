@@ -7,9 +7,11 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -63,6 +65,29 @@ public class BoardController {
 		// 서비스에 가서 데이터 가져오기
 		model.addAttribute("board", boardService.글상세보기(id));
 		return "detail";
+	}
+	
+	@GetMapping("/updateForm/{id}")
+	public String updateForm(@PathVariable int id, Model model) {
+		Board board = boardService.글상세보기(id);
+		model.addAttribute("board", board);
+		return "updateForm";
+	}
+	
+	// 글 수정하는 주소 설계해보기
+	// 스프링의 기본 파싱 전략 key-value 
+	// 클라이언트 Json으로 던짐.
+	@PutMapping("/board/{id}")
+	@ResponseBody
+	public String updateBoard(@RequestBody BoardSaveRequestDto dto, @PathVariable int id) {
+		boardService.글수정하기(dto, id);
+		return "ok";
+	}
+	
+	@DeleteMapping("/board/{id}")
+	@ResponseBody
+	public boolean deleteBoard(@PathVariable int id) { 
+		return boardService.글삭제하기(id) == 1 ? true : false;
 	}
 	
 }
